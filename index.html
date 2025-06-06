@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Y-Lifestyle Textiles &amp; Living</title>
+
+  <!-- ===========================
+       CSS: Layout, Grid, Carousel, Components
+       =========================== -->
+  <style>
+    /* ==== RESET & BASE ==== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      background: #f9f9f9;
+      color: #333;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ==== HEADER & NAVIGATION ==== */
+    header {
+      background-color: #2e5f4f;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    nav ul li a {
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    nav ul li a:hover {
+      color: #d4efdf;
+    }
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: #e74c3c;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ==== BANNER CAROUSEL ==== */
+    #banner-carousel {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 1rem auto;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #000; /* fallback background while images load */
+    }
+    #banner-carousel img {
+      width: 100%;
+      height: auto;       /* Let image scale proportionally */
+      display: none;      /* Hide all by default */
+    }
+    #banner-carousel img.active {
+      display: block;     /* Show only the active slide */
+    }
+    /* Carousel nav buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .carousel-btn.prev {
+      left: 10px;
+    }
+    .carousel-btn.next {
+      right: 10px;
+    }
+
+    /* ==== MAIN SECTIONS ==== */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .grid-divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 2rem 0;
+    }
+
+    /* ==== PRODUCT CATALOG SECTION ==== */
+    #catalog h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #2e5f4f;
+      text-align: center;
+    }
+    .category-title {
+      font-size: 1.4rem;
+      margin: 1.5rem 0 0.75rem;
+      color: #3a3a3a;
+      border-left: 4px solid #2e5f4f;
+      padding-left: 0.5rem;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    .product-card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    .product-info {
+      padding: 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-info h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #2e5f4f;
+    }
+    .product-info button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #2e5f4f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .product-info button:hover {
+      background: #246043;
+    }
+
+    /* ==== CART SIDEBAR/MODAL ==== */
+    #cart-modal {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 350px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+    }
+    #cart-modal.open {
+      right: 0;
+    }
+    .cart-header {
+      padding: 1.5rem;
+      background: #2e5f4f;
+      color: #fff;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-header .close-cart {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .cart-content {
+      flex-grow: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.5rem;
+    }
+    .cart-item-name {
+      font-size: 0.95rem;
+      color: #333;
+      flex-grow: 1;
+    }
+    .cart-item-qty {
+      margin-left: 0.5rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .cart-footer {
+      padding: 1rem;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+    }
+    .cart-footer button {
+      padding: 0.6rem 1.2rem;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cart-footer button:hover {
+      background: #c0392b;
+    }
+
+    /* ==== RESPONSIVE ADJUSTMENTS ==== */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .cart-icon {
+        font-size: 1rem;
+      }
+      #cart-modal {
+        width: 100%;
+      }
+      /* Let carousel image shrink proportionally */
+      #banner-carousel img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===========================
+       HEADER with Logo & Navigation
+       =========================== -->
+  <header>
+    <div class="logo">Y-Lifestyle Textiles</div>
+    <nav>
+      <ul>
+        <li><a href="benefits.html">Why MN Cloths</a></li>
+        <li><a href="#catalog">Shop</a></li>
+        <li>
+          <div id="cart-toggle" class="cart-icon">?
+            <div id="cart-count" class="cart-count">0</div>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===========================
+       BANNER CAROUSEL (FULL-SIZE IMAGES)
+       =========================== -->
+  <div id="banner-carousel">
+    <img src="images/banner1.jpg" alt="Y-Lifestyle Banner 1" class="active" />
+    <img src="images/banner2.jpg" alt="Y-Lifestyle Banner 2" />
+    <img src="images/banner3.jpg" alt="Y-Lifestyle Banner 3" />
+
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
+
+  <!-- ===========================
+       MAIN CONTENT
+       =========================== -->
+  <main>
+    <div class="grid-divider"></div>
+
+    <!-- ===== PRODUCT CATALOG SECTION ===== -->
+    <section id="catalog">
+      <h2>? Shop Our Collections</h2>
+
+      <!-- ===== CATEGORY: Bags & Storage ===== -->
+      <div class="category-title">Bags &amp; Storage</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="cloth_zipper_pouch" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_cloth_zipper_pouch.jpg" alt="Cloth Zipper Pouch" />
+          <div class="product-info">
+            <h3>Cloth Zipper Pouch</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="foldable_shoulder_bag_stitched_logo" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_foldable_shoulder_bag_stitched_logo.jpg" alt="Foldable Shoulder Bag (Stitched Logo)" />
+          <div class="product-info">
+            <h3>Foldable Shoulder Bag (Stitched Logo)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="foldable_shoulder_bag_with_the_stitched" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_foldable_shoulder_bag_with_the_stitched.jpg" alt="Foldable Shoulder Bag with the Stitched" />
+          <div class="product-info">
+            <h3>Foldable Shoulder Bag with the Stitched</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="reusable_grocery_bag_undyed_canvas" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_reusable_grocery_bag_undyed_canvas.jpg" alt="Reusable Grocery Bag (Undyed Canvas)" />
+          <div class="product-info">
+            <h3>Reusable Grocery Bag (Undyed Canvas)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="reusable_shoulder_bag_double_straps" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_reusable_shoulder_bag_with_double_straps.jpg" alt="Reusable Shoulder Bag with Double Straps" />
+          <div class="product-info">
+            <h3>Reusable Shoulder Bag with Double Straps</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="surrukku_pai_drawstring_cotton_pouch" data-category="Bags &amp; Storage">
+          <img src="images/bags_storage_surrukku_pai_drawstring_cotton_pouch.jpg" alt="Surrukku Pai (Drawstring Cotton Pouch)" />
+          <div class="product-info">
+            <h3>Surrukku Pai (Drawstring Cotton Pouch)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Bath & Self-Care ===== -->
+      <div class="category-title">Bath &amp; Self-Care</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="ayurveda_bathrobe_unbleached_cotton_wrap" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_ayurveda_bathrobe_unbleached_cotton_wrap.jpg" alt="Ayurveda Bathrobe (Unbleached Cotton Wrap)" />
+          <div class="product-info">
+            <h3>Ayurveda Bathrobe (Unbleached Cotton Wrap)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="body_wipe_cloths_abhyanga_towels" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_body_wipe_cloths_abhyanga_towels.jpg" alt="Body Wipe Cloths (Abhyanga Towels)" />
+          <div class="product-info">
+            <h3>Body Wipe Cloths (Abhyanga Towels)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="herbal_compress_covers_vetiver_neem_pouches" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_herbal_compress_covers_vetiver_neem_pouches.jpg" alt="Herbal Compress Covers (Vetiver, Neem Pouches)" />
+          <div class="product-info">
+            <h3>Herbal Compress Covers (Vetiver, Neem Pouches)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="muslin_reusable_face_towels" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_muslin_reusable_face_towels.jpg" alt="Muslin Reusable Face Towels" />
+          <div class="product-info">
+            <h3>Muslin Reusable Face Towels</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="oil_massage_cloth_turmeric_stained_cotton" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_oil_massage_cloth_turmeric_stained_cotton.jpg" alt="Oil Massage Cloth (Turmeric-Stained Cotton)" />
+          <div class="product-info">
+            <h3>Oil Massage Cloth (Turmeric-Stained Cotton)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="post_bath_sun_drying_sheet_thin_breathable_cotton" data-category="Bath &amp; Self-Care">
+          <img src="images/bath_self_care_post_bath_sun_drying_sheet_thin_breathable_cotton.jpg" alt="Post-Bath Sun Drying Sheet (Thin Breathable Cotton)" />
+          <div class="product-info">
+            <h3>Post-Bath Sun Drying Sheet (Thin Breathable Cotton)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Bedroom ===== -->
+      <div class="category-title">Bedroom</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="ayurvedic_floor_sleeping_mats_cottonjute_layered" data-category="Bedroom">
+          <img src="images/bedroom_ayurvedic_floor_sleeping_mats_cottonjute_layered.jpg" alt="Ayurvedic Floor Sleeping Mats (Cotton-Jute Layered)" />
+          <div class="product-info">
+            <h3>Ayurvedic Floor Sleeping Mats (Cotton-Jute Layered)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="hand_dyed_block_print_quilts_natural_dyes" data-category="Bedroom">
+          <img src="images/bedroom_hand_dyed_block_print_quilts_natural_dyes.jpg" alt="Hand-Dyed Block Print Quilts (Natural Dyes)" />
+          <div class="product-info">
+            <h3>Hand-Dyed Block Print Quilts (Natural Dyes)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="herbal_infused_pillow_liners_tulsi_vetiver" data-category="Bedroom">
+          <img src="images/bedroom_herbal_infused_pillow_liners_tulsi_vetiver.jpg" alt="Herbal-Infused Pillow Liners (Tulsi, Vetiver)" />
+          <div class="product-info">
+            <h3>Herbal-Infused Pillow Liners (Tulsi, Vetiver)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="khada_pillow_covers" data-category="Bedroom">
+          <img src="images/bedroom_khada_pillow_covers.jpg" alt="Khada Pillow Covers" />
+          <div class="product-info">
+            <h3>Khada Pillow Covers</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="light_filtering_mul_cotton_curtains_vitamin_d_enhancing" data-category="Bedroom">
+          <img src="images/bedroom_light_filtering_mul_cotton_curtains_vitamin_d_enhancing.jpg" alt="Light-Filtering Mul Cotton Curtains (Vitamin D-Enhancing)" />
+          <div class="product-info">
+            <h3>Light-Filtering Mul Cotton Curtains (Vitamin D-Enhancing)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="minimal_weave_cotton_duvet_covers" data-category="Bedroom">
+          <img src="images/bedroom_minimal_weave_cotton_duvet_covers.jpg" alt="Minimal Weave Cotton Duvet Covers" />
+          <div class="product-info">
+            <h3>Minimal Weave Cotton Duvet Covers</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="muslin_mosquito_nets_breathable_light_permeable" data-category="Bedroom">
+          <img src="images/bedroom_muslin_mosquito_nets_breathable_light_permeable.jpg" alt="Muslin Mosquito Nets (Breathable, Light-Permeable)" />
+          <div class="product-info">
+            <h3>Muslin Mosquito Nets (Breathable, Light-Permeable)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="organic_cotton_bedsheets_undyed_handwoven" data-category="Bedroom">
+          <img src="images/bedroom_organic_cotton_bedsheets_undyed_handwoven.jpg" alt="Organic Cotton Bedsheets (Undyed-Handwoven)" />
+          <div class="product-info">
+            <h3>Organic Cotton Bedsheets (Undyed-Handwoven)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Dining & Kitchen ===== -->
+      <div class="category-title">Dining &amp; Kitchen</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="cloth_napkins_undyed_mild_herbal_wash" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_cloth_napkins_undyed_mild_herbal_wash.jpg" alt="Cloth Napkins (Undyed Mild Herbal Wash)" />
+          <div class="product-info">
+            <h3>Cloth Napkins (Undyed Mild Herbal Wash)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="eco_lunch_bag_banana_leaf_inspired_cotton_bag" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_eco_lunch_bag_banana_leaf_inspired_cotton_bag.jpg" alt="Eco Lunch Bag (Banana Leaf–Inspired Cotton Bag)" />
+          <div class="product-info">
+            <h3>Eco Lunch Bag (Banana Leaf–Inspired Cotton Bag)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="herbal_dyed_apron_kitchen_wear" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_herbal_dyed_apron_kitchen_wear.jpg" alt="Herbal-Dyed Apron (Kitchen Wear)" />
+          <div class="product-info">
+            <h3>Herbal-Dyed Apron (Kitchen Wear)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="muslin_fruitvegetable_wraps_to_preserve_freshness" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_muslin_fruitvegetable_wraps_to_preserve_freshness.jpg" alt="Muslin Fruit/Vegetable Wraps (To Preserve Freshness)" />
+          <div class="product-info">
+            <h3>Muslin Fruit/Vegetable Wraps (To Preserve Freshness)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="reusable_kitchen_wipes_cotton_gauzeterry" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_reusable_kitchen_wipes_cotton_gauzeterry.jpg" alt="Reusable Kitchen Wipes (Cotton Gauze/Terry)" />
+          <div class="product-info">
+            <h3>Reusable Kitchen Wipes (Cotton Gauze/Terry)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="spice_jar_covers_anjarai_petti_wraps" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_spice_jar_covers_anjarai_petti_wraps.jpg" alt="Spice Jar Covers (Anjarai Petti Wraps)" />
+          <div class="product-info">
+            <h3>Spice Jar Covers (Anjarai Petti Wraps)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="tablecloths_with_natural_block_prints" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_tablecloths_with_natural_block_prints.jpg" alt="Tablecloths with Natural Block Prints" />
+          <div class="product-info">
+            <h3>Tablecloths with Natural Block Prints</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="traditional_thuni_sooru_food_wrap_for_ricemeal_carry" data-category="Dining &amp; Kitchen">
+          <img src="images/dining_kitchen_traditional_thuni_sooru_food_wrap_for_ricemeal_carry.jpg" alt="Traditional ‘Thuni Sooru’ Food Wrap (for rice/meal carry)" />
+          <div class="product-info">
+            <h3>Traditional ‘Thuni Sooru’ Food Wrap (for rice/meal carry)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Everyday Wear ===== -->
+      <div class="category-title">Everyday Wear</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="innerwear_undyed_soft_cotton" data-category="Everyday Wear">
+          <img src="images/everyday_wear_innerwear_undyed_soft_cotton.jpg" alt="Innerwear (Undyed Soft Cotton)" />
+          <div class="product-info">
+            <h3>Innerwear (Undyed Soft Cotton)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="men_s_khadi_cotton_shirts_veshti" data-category="Everyday Wear">
+          <img src="images/everyday_wear_men_s_khadi_cotton_shirts_veshti.jpg" alt="Men’s Khadi Cotton Shirts & Veshti" />
+          <div class="product-info">
+            <h3>Men’s Khadi Cotton Shirts & Veshti</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="sleepwear_sets_airy_muslin_cotton" data-category="Everyday Wear">
+          <img src="images/everyday_wear_sleepwear_sets_airy_muslin_cotton.jpg" alt="Sleepwear Sets (Airy Muslin Cotton)" />
+          <div class="product-info">
+            <h3>Sleepwear Sets (Airy Muslin Cotton)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="woman_wearing_a_natural_dyed_multicolored_unbleached_muslin_saree_with_floral_designs" data-category="Everyday Wear">
+          <img src="images/everyday_wear_woman_wearing_a_natural_dyed_multicolored_unbleached_muslin_saree_with_floral_designs.jpg" alt="Natural Dyed, Multicolored Muslin Saree (Floral Designs)" />
+          <div class="product-info">
+            <h3>Natural Dyed, Multicolored Muslin Saree (Floral Designs)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="woman_wearing_a_natural_dyed_multicolored_unbleached_muslin_saree_with_floral_designs1" data-category="Everyday Wear">
+          <img src="images/everyday_wear_woman_wearing_a_natural_dyed_multicolored_unbleached_muslin_saree_with_floral_designs1.jpg" alt="Natural Dyed, Multicolored Muslin Saree (Floral Designs) 1" />
+          <div class="product-info">
+            <h3>Natural Dyed, Multicolored Muslin Saree (Floral Designs) 1</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set" data-category="Everyday Wear">
+          <img src="images/everyday_wear_woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set.jpg" alt="Natural Dyed, Multicolored Salwar Kurta Set" />
+          <div class="product-info">
+            <h3>Natural Dyed, Multicolored Salwar Kurta Set</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set1" data-category="Everyday Wear">
+          <img src="images/everyday_wear_woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set1.jpg" alt="Natural Dyed, Multicolored Salwar Kurta Set 1" />
+          <div class="product-info">
+            <h3>Natural Dyed, Multicolored Salwar Kurta Set 1</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set2" data-category="Everyday Wear">
+          <img src="images/everyday_wear_woman_wearing_a_simple_naturally_dyed_multicolored_unbleached_salwarkurta_set2.jpg" alt="Natural Dyed, Multicolored Salwar Kurta Set 2" />
+          <div class="product-info">
+            <h3>Natural Dyed, Multicolored Salwar Kurta Set 2</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="women_s_unbleached_muslin_sarees" data-category="Everyday Wear">
+          <img src="images/everyday_wear_women_s_unbleached_muslin_sarees.jpg" alt="Women’s Unbleached Muslin Sarees" />
+          <div class="product-info">
+            <h3>Women’s Unbleached Muslin Sarees</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="women_s_unbleached_muslin_sarees1" data-category="Everyday Wear">
+          <img src="images/everyday_wear_women_s_unbleached_muslin_sarees1.jpg" alt="Women’s Unbleached Muslin Sarees 1" />
+          <div class="product-info">
+            <h3>Women’s Unbleached Muslin Sarees 1</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Gifts & Return Gift Items ===== -->
+      <div class="category-title">Gifts &amp; Return Gift Items</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="block_printed_handkerchief_packs" data-category="Gifts &amp; Return Gift Items">
+          <img src="images/gifts_return_gift_items_block_printed_handkerchief_packs.jpg" alt="Block-Printed Handkerchief Packs" />
+          <div class="product-info">
+            <h3>Block-Printed Handkerchief Packs</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="custom_embroidered_napkin_sets" data-category="Gifts &amp; Return Gift Items">
+          <img src="images/gifts_return_gift_items_custom_embroidered_napkin_sets.jpg" alt="Custom-Embroidered Napkin Sets" />
+          <div class="product-info">
+            <h3>Custom-Embroidered Napkin Sets</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="herbal_pad_gift_kit_wrapped_in_muslin" data-category="Gifts &amp; Return Gift Items">
+          <img src="images/gifts_return_gift_items_herbal_pad_gift_kit_wrapped_in_muslin.jpg" alt="Herbal Pad Gift Kit Wrapped in Muslin" />
+          <div class="product-info">
+            <h3>Herbal Pad Gift Kit Wrapped in Muslin</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="reusable_y_diet_lunch_wrap_combo" data-category="Gifts &amp; Return Gift Items">
+          <img src="images/gifts_return_gift_items_reusable_y_diet_lunch_wrap_combo.jpg" alt="Reusable Y-Diet Lunch Wrap Combo" />
+          <div class="product-info">
+            <h3>Reusable Y-Diet Lunch Wrap Combo</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="spice_filled_cotton_sachets" data-category="Gifts &amp; Return Gift Items">
+          <img src="images/gifts_return_gift_items_spice_filled_cotton_sachets.jpg" alt="Spice-Filled Cotton Sachets" />
+          <div class="product-info">
+            <h3>Spice-Filled Cotton Sachets</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Sun-Friendly Clothing (Vitamin D Enhancer) ===== -->
+      <div class="category-title">Sun-Friendly Clothing (Vitamin D Enhancer)</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="cotton_lungis_wrap_skirts_for_airflow" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_cotton_lungis_wrap_skirts_for_airflow.jpg" alt="Cotton Lungis / Wrap Skirts for Airflow" />
+          <div class="product-info">
+            <h3>Cotton Lungis / Wrap Skirts for Airflow</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="handspun_short_sleeve_tops" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_handspun_short_sleeve_tops.jpg" alt="Handspun Short Sleeve Tops" />
+          <div class="product-info">
+            <h3>Handspun Short Sleeve Tops</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="handspun_short_sleeve_tops1" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_handspun_short_sleeve_tops1.jpg" alt="Handspun Short Sleeve Tops 1" />
+          <div class="product-info">
+            <h3>Handspun Short Sleeve Tops 1</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="kids_open_neck_muslin_clothes" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_kids_open_neck_muslin_clothes.jpg" alt="Kids’ Open-Neck Muslin Clothes" />
+          <div class="product-info">
+            <h3>Kids’ Open-Neck Muslin Clothes</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="sun_friendly_clothing_vitamin_d_enhancer" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_sun_friendly_clothing_vitamin_d_enhancer.jpg" alt="Sun-Friendly Clothing (Vitamin D Enhancer)" />
+          <div class="product-info">
+            <h3>Sun-Friendly Clothing (Vitamin D Enhancer)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="sun_friendly_clothing_vitamin_d_enhancer_men" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_sun_friendly_clothing_vitamin_d_enhancer_men.jpg" alt="Sun-Friendly Clothing (Vitamin D Enhancer) Men" />
+          <div class="product-info">
+            <h3>Sun-Friendly Clothing (Vitamin D Enhancer) Men</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="thin_muslin_tunics_for_sun_exposure" data-category="Sun-Friendly Clothing">
+          <img src="images/sun_friendly_clothing_vitamin_d_enhancer_thin_muslin_tunics_for_sun_exposure.jpg" alt="Thin Muslin Tunics for Sun Exposure" />
+          <div class="product-info">
+            <h3>Thin Muslin Tunics for Sun Exposure</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORY: Yoga & Wellness ===== -->
+      <div class="category-title">Yoga &amp; Wellness</div>
+      <div class="catalog-grid">
+        <div class="product-card" data-name="breathable_ch_ra_shawls_for_rituals" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_breathable_ch_ra_shawls_for_rituals.jpg" alt="Breathable ch?ra Shawls for Rituals" />
+          <div class="product-info">
+            <h3>Breathable ch?ra Shawls for Rituals</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="cotton_prayer_shawl_meditation_wrap" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_cotton_prayer_shawl_meditation_wrap.jpg" alt="Cotton Prayer Shawl / Meditation Wrap" />
+          <div class="product-info">
+            <h3>Cotton Prayer Shawl / Meditation Wrap</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="herbal_inhalation_cloth_wraps" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_herbal_inhalation_cloth_wraps.jpg" alt="Herbal Inhalation Cloth Wraps" />
+          <div class="product-info">
+            <h3>Herbal Inhalation Cloth Wraps</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="meditation_eye_pillow_with_herbal_fillings" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_meditation_eye_pillow_with_herbal_fillings.jpg" alt="Meditation Eye Pillow (with Herbal Fillings)" />
+          <div class="product-info">
+            <h3>Meditation Eye Pillow (with Herbal Fillings)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="mindfulness_sitting_mat_natural_cotton_filled" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_mindfulness_sitting_mat_natural_cotton_filled.jpg" alt="Mindfulness Sitting Mat (Natural Cotton Filled)" />
+          <div class="product-info">
+            <h3>Mindfulness Sitting Mat (Natural Cotton Filled)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="simple_dhoti_for_pujayoga_sessions" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_simple_dhoti_for_pujayoga_sessions.jpg" alt="Simple Dhoti for Pujayoga Sessions" />
+          <div class="product-info">
+            <h3>Simple Dhoti for Pujayoga Sessions</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+        <div class="product-card" data-name="yoga_mat_spread_kala_cottonjute" data-category="Yoga &amp; Wellness">
+          <img src="images/yoga_wellness_yoga_mat_spread_kala_cottonjute.jpg" alt="Yoga Mat Spread (Kala Cotton-Jute)" />
+          <div class="product-info">
+            <h3>Yoga Mat Spread (Kala Cotton-Jute)</h3>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===========================
+       CART SIDEBAR/MODAL
+       =========================== -->
+  <div id="cart-modal">
+    <div class="cart-header">
+      Your Cart
+      <span id="close-cart" class="close-cart">?</span>
+    </div>
+    <div class="cart-content" id="cart-content">
+      <!-- Dynamically populated cart items -->
+      <p style="color: #777; font-size: 0.95rem;">No items in cart.</p>
+    </div>
+    <div class="cart-footer">
+      <button id="checkout-btn">Checkout</button>
+    </div>
+  </div>
+
+  <!-- ===========================
+       JAVASCRIPT
+       - Carousel logic
+       - Cart functionality
+       =========================== -->
+  <script>
+    /********************************************
+     * 1) BANNER CAROUSEL LOGIC
+     ********************************************/
+    document.addEventListener("DOMContentLoaded", function() {
+      const slides = document.querySelectorAll("#banner-carousel img");
+      const prevBtn = document.querySelector(".carousel-btn.prev");
+      const nextBtn = document.querySelector(".carousel-btn.next");
+      let currentIndex = 0;
+
+      function showSlide(index) {
+        slides.forEach((img, i) => {
+          img.classList.toggle("active", i === index);
+        });
+      }
+
+      function goNext() {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+      }
+      function goPrev() {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        showSlide(currentIndex);
+      }
+
+      nextBtn.addEventListener("click", goNext);
+      prevBtn.addEventListener("click", goPrev);
+
+      // Auto-advance every 5 seconds:
+      setInterval(goNext, 5000);
+    });
+
+    /********************************************
+     * 2) CART FUNCTIONALITY
+     ********************************************/
+    const addToCartButtons = document.querySelectorAll(".add-to-cart");
+    const cartToggle = document.getElementById("cart-toggle");
+    const cartModal = document.getElementById("cart-modal");
+    const closeCartBtn = document.getElementById("close-cart");
+    const cartContent = document.getElementById("cart-content");
+    const cartCountElem = document.getElementById("cart-count");
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    let cart = [];
+
+    function renderCart() {
+      cartContent.innerHTML = "";
+      if (cart.length === 0) {
+        const emptyMsg = document.createElement("p");
+        emptyMsg.style.color = "#777";
+        emptyMsg.style.fontSize = "0.95rem";
+        emptyMsg.textContent = "No items in cart.";
+        cartContent.appendChild(emptyMsg);
+        cartCountElem.textContent = "0";
+        return;
+      }
+      cart.forEach(item => {
+        const itemRow = document.createElement("div");
+        itemRow.classList.add("cart-item");
+
+        const nameDiv = document.createElement("div");
+        nameDiv.classList.add("cart-item-name");
+        nameDiv.textContent = item.name;
+
+        const qtyDiv = document.createElement("div");
+        qtyDiv.classList.add("cart-item-qty");
+        qtyDiv.textContent = "× " + item.qty;
+
+        itemRow.appendChild(nameDiv);
+        itemRow.appendChild(qtyDiv);
+        cartContent.appendChild(itemRow);
+      });
+
+      const totalQty = cart.reduce((sum, itm) => sum + itm.qty, 0);
+      cartCountElem.textContent = totalQty;
+    }
+
+    addToCartButtons.forEach(button => {
+      button.addEventListener("click", (e) => {
+        const card = e.target.closest(".product-card");
+        const productName = card.dataset.name;
+        const existing = cart.find(it => it.name === productName);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({ name: productName, qty: 1 });
+        }
+        renderCart();
+      });
+    });
+
+    cartToggle.addEventListener("click", () => {
+      cartModal.classList.add("open");
+      renderCart();
+    });
+    closeCartBtn.addEventListener("click", () => {
+      cartModal.classList.remove("open");
+    });
+    checkoutBtn.addEventListener("click", () => {
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+      alert(
+        "Proceeding to checkout...\n(Implementation of actual checkout is beyond this demo.)"
+      );
+    });
+    document.addEventListener("click", (e) => {
+      if (!cartModal.contains(e.target) && !cartToggle.contains(e.target)) {
+        cartModal.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+</html>
